@@ -63,7 +63,7 @@ for tt = total_trials(:)';%how many trials for the "subject"
             fprintf('TotalTrial: %3.3g (%3d/%3d); Alpha: %3.3g (%3d/%3d); SD: %3.3g (%3d/%3d); %s; \n',tt,c(1),ttotal_trials,aa,c(2),talpha,ss,c(3),tSDs,datestr(now,'HH:MM:SS'))
             aaa = NaN(1,tSimulation);
             sss = aaa;   
-            xxx = NaN(length(stimRange),tSimulation);
+            xx = NaN(length(stimRange),tSimulation);
             for simulation_repeat = 1:tSimulation;%how many simulation runs        
                 fprintf('Simulation Run No %g\n',simulation_repeat);
                 %take a different lambda per subject
@@ -98,15 +98,13 @@ for tt = total_trials(:)';%how many trials for the "subject"
                 ll(simulation_repeat)  = Lambda;
                 gg(simulation_repeat)  = Gamma;
                 
-                xx                     = NaN(length(stimRange),1);
+                xxx=NaN(length(stimRange),1);
                 for i=1:length(stimRange)
-                    xx(i)=length(find(PM.x==stimRange(i)));
+                    xxx(i)=length(find(PM.x(1:end-1)==stimRange(i)));
                 end
-                
-                    
-                xxx(:,simulation_repeat)  = xx;
+                xx(:,simulation_repeat)=xxx;
             end
-            d.nxmean=xxx;
+         
             %store the estimated parameters
             d.alpha(:,c(2),c(3),c(1))          = aaa;
             d.sd(:,c(2),c(3),c(1))             = sss;
@@ -119,15 +117,19 @@ for tt = total_trials(:)';%how many trials for the "subject"
             d.param.lapse(:,c(2),c(3),c(1))    = ll;
             d.param.ttrials(:,c(2),c(3),c(1))  = tt;
             d.param.zerotrials(:,c(2),c(3),c(1))  = p0;
+            
+            d.nxmean(:,:,c(2),c(3),c(1))       = xx;
             %%save the stuff
              try
                 if ispc
-                      save_path        ='C:\Users\onat\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question';
+                      save_path        ='C:\Users\onat\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\';
+                elseif ismac
+                    save_path        ='/Users/onat/Dropbox/feargen_lea/EthnoMaster/simdata/';
                     
                 elseif isunix
                     save_path        ='/home/kampermann/Documents/simdata/';
                 end
-                save(sprintf('%sd_PSImargYN_%s_%s.mat',save_path,logname,datestr(now,'yyyymmdd_HHMM')),'d');
+                save(sprintf('%sd_PSImargYN0_%s_%s.mat',save_path,logname,datestr(now,'yyyymmdd_HHMM')),'d');
             catch
                 fprintf('Cannot save here...\n');
             end
@@ -146,6 +148,7 @@ end
         d.param.guess     = NaN(tSimulation,talpha,tSDs,length(total_trials));
         d.param.lapse     = NaN(tSimulation,talpha,tSDs,length(total_trials));
         d.param.ttrials   = NaN(tSimulation,talpha,tSDs,length(total_trials));
-        d.param.zerotrials =NaN(tSimulation,talpha,tSDs,length(total_trials));
-    end
+        d.param.zerotrials= NaN(tSimulation,talpha,tSDs,length(total_trials));
+        d.nxmean          = NaN(stimRange,tSimulation,talpha,tSDs,length(total_trials));
+    end 
 end
