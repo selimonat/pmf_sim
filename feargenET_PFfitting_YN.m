@@ -334,6 +334,7 @@ movefile(p.path.subject,p.path.finalsubject);
         p.path.stim                   = [p.path.baselocation 'Stimuli\Gradients\' p.path.stimfolder '\'];
         %
         p.subID                       = sprintf('sub%02d',subject);
+        p.path.edf                    = sprintf([p.subID 'p%02d' ],phase);
         timestamp                     = datestr(now,30);
         p.path.subject                = [p.path.experiment 'data\tmp\' p.subID '_' timestamp '\'];
         p.path.finalsubject           = [p.path.experiment 'data\' p.subID '_' timestamp '\' ];
@@ -541,8 +542,19 @@ movefile(p.path.subject,p.path.finalsubject);
 
     function [text]=GetText(nInstruct);
         
+        if nInstruct == 0%Eyetracking calibration
+                
+                text = ['Um Deine Augenbewegungen zu messen, \n' ...
+                        'müssen wir jetzt den Eye-Tracker kalibrieren.\n' ...
+                        'Dazu zeigen wir Dir einige Punkte auf dem Bildschirm, \n' ...
+                        'bei denen Du Dich wie folgt verhältst:\n' ...
+                        'Bitte fixiere das Fixationskreuz und \n' ...
+                        'bleibe so lange darauf, wie es zu sehen ist.\n' ...
+                        'Bitte drücke jetzt den mittleren Knopf, \n' ...
+                        'um mit der Kalibrierung weiterzumachen.\n' ...
+                    ];
         
-        if nInstruct == 1
+        elseif nInstruct == 1
             text = ['Du siehst nun nacheinander zwei Gesichter.\n'...
                 '\n'...
                 'Danach wirst Du gefragt, ob die Gesichter unterschiedlich oder gleich waren.\n'...
@@ -779,7 +791,7 @@ function InitEyeLink
  function CalibrateEL
         fprintf('=================\n=================\nEntering Eyelink Calibration\n')
         p_var_ExpPhase  = 0;
-        ShowInstruction(0,1);
+        ShowInstruction(0);
         EyelinkDoTrackerSetup(el);
         %Returns 'messageString' text associated with result of last calibration
         [~, messageString] = Eyelink('CalMessage');
