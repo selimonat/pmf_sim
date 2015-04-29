@@ -63,7 +63,7 @@ for tt = total_trials(:)';%how many trials for the "subject"
             fprintf('TotalTrial: %3.3g (%3d/%3d); Alpha: %3.3g (%3d/%3d); SD: %3.3g (%3d/%3d); %s; \n',tt,c(1),ttotal_trials,aa,c(2),talpha,ss,c(3),tSDs,datestr(now,'HH:MM:SS'))
             aaa = NaN(1,tSimulation);
             sss = aaa; 
-            xxx = NaN(length(stimRange),tSimulation);
+            xx = NaN(length(stimRange),tSimulation);
             for simulation_repeat = 1:tSimulation;%how many simulation runs
                 fprintf('Simulation Run No %g\n',simulation_repeat);
                 %take a different lambda per subject
@@ -85,28 +85,30 @@ for tt = total_trials(:)';%how many trials for the "subject"
                 lll(simulation_repeat) = PM.lapse(end);
                 ggg(simulation_repeat) = PM.guess(end);
                 ll(simulation_repeat)  = Lambda;
+                %within simulation
                 gg(simulation_repeat)  = Gamma;
-                xx=NaN(length(stimRange),1);
+                xxx=NaN(length(stimRange),1);
                 for i=1:length(stimRange)
-                    xx(i)=length(find(PM.x==stimRange(i)));
+                    xxx(i)=length(find(PM.x(1:end-1)==stimRange(i)));
                 end
-                
+                xx(:,simulation_repeat)=xxx;
                     
-                xxx(:,simulation_repeat)  = xx;
-            end
-            d.nxmean=xxx;
+             end
+            
             %store the estimated parameters
             d.alpha(:,c(2),c(3),c(1))          = aaa;
             d.sd(:,c(2),c(3),c(1))             = sss;
             d.guess(:,c(2),c(3),c(1))          = ggg;
             d.lapse(:,c(2),c(3),c(1))          = lll;
-            d.nxmean(:,c(2),c(3),c(1))         = xx;
+            
             %store the (real) used parameters
             d.param.alpha(:,c(2),c(3),c(1))    = aa;
             d.param.sd(:,c(2),c(3),c(1))       = ss;
             d.param.guess(:,c(2),c(3),c(1))    = gg;
             d.param.lapse(:,c(2),c(3),c(1))    = ll;
             d.param.ttrials(:,c(2),c(3),c(1))  = tt;
+            
+            d.nxmean(:,:,c(2),c(3),c(1))       = xx;
             %%save the stuff
             try
                 if ispc
@@ -136,5 +138,6 @@ end
         d.param.guess    = NaN(tSimulation,talpha,tSDs,length(total_trials));
         d.param.lapse    = NaN(tSimulation,talpha,tSDs,length(total_trials));
         d.param.ttrials  = NaN(tSimulation,talpha,tSDs,length(total_trials));
+        d.nxmean         = NaN(length(stimRange),tSimulation,talpha,tSDs,length(total_trials));
     end
 end
