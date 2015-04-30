@@ -124,7 +124,7 @@ for tt = total_trials(:)';%how many trials for the "subject"
                 if ispc
                       save_path        ='C:\Users\onat\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\';
                 elseif ismac
-                    save_path        ='/Users/onat/Dropbox/feargen_lea/EthnoMaster/simdata/';
+                    save_path        ='/Users/onat/Dropbox/feargen_lea/EthnoMaster/simdata/diffSDs/zeros_nozeros/';
                     
                 elseif isunix
                     save_path        ='/home/kampermann/Documents/simdata/';
@@ -149,6 +149,6 @@ end
         d.param.lapse     = NaN(tSimulation,talpha,tSDs,length(total_trials));
         d.param.ttrials   = NaN(tSimulation,talpha,tSDs,length(total_trials));
         d.param.zerotrials= NaN(tSimulation,talpha,tSDs,length(total_trials));
-        d.nxmean          = NaN(stimRange,tSimulation,talpha,tSDs,length(total_trials));
+        d.nxmean          = NaN(length(stimRange),tSimulation,talpha,tSDs,length(total_trials));
     end 
 end
