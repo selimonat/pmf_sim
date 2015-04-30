@@ -1,3 +1,2 @@
-# ExperimentalCode
-
-This repo contains code for conducting experiments (fMRI, behavioral) with psychophysics toolbox.
+# pmf_sim
+This repo contains code for simulating different methods for recovering psychometric function parameters.
