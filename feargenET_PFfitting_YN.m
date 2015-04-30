@@ -6,27 +6,10 @@ function [p,Log]=feargenET_PFfitting_YN(subject,   csp_degree)
 % 1st face, and so)
 simulation_mode = 1;
 
-ListenChar(2);%disable pressed keys to be spitted around
-commandwindow;
-%clear everything
-clear mex global functions
-cgshut;
-global cogent;
-%%%%%%%%%%%load the GETSECS mex files so call them at least once
-GetSecs;
-WaitSecs(0.001);
-
-
 p = [];
 SetParams;
 SetPTB;
 
-InitEyeLink;
-WaitSecs(2);
-%calibrate if we are at the scanner computer.
-if strcmp(p.hostname,'triostim1') || strcmp(p.hostname,'etpc');
-     CalibrateEL;
-end
 
 %save again the parameter file
 save(p.path.path_param,'p');
@@ -211,8 +194,6 @@ fprintf('Chain %g: Estimated Threshold (alpha): %4.2f \n',chain,PM{chain}.thresh
 fprintf('Chain %g: Estimated Slope (beta): %4.2f \n',chain,PM{chain}.slope(end));
 end
 
-%get the eyelink file back to this computer
-StopEyelink(p.path.edf);
 
 
 save([p.path.dropbox 'Log' num2str(subject) '.mat'],'Log')
@@ -334,7 +315,6 @@ movefile(p.path.subject,p.path.finalsubject);
         p.path.stim                   = [p.path.baselocation 'Stimuli\Gradients\' p.path.stimfolder '\'];
         %
         p.subID                       = sprintf('sub%02d',subject);
-        p.path.edf                    = sprintf([p.subID 'p%02d' ],phase);
         timestamp                     = datestr(now,30);
         p.path.subject                = [p.path.experiment 'data\tmp\' p.subID '_' timestamp '\'];
         p.path.finalsubject           = [p.path.experiment 'data\' p.subID '_' timestamp '\' ];
@@ -540,21 +520,10 @@ movefile(p.path.subject,p.path.finalsubject);
     end
 
 
-    function [text]=GetText(nInstruct);
+    function [text]=GetText(nInstruct)
         
-        if nInstruct == 0%Eyetracking calibration
-                
-                text = ['Um Deine Augenbewegungen zu messen, \n' ...
-                        'müssen wir jetzt den Eye-Tracker kalibrieren.\n' ...
-                        'Dazu zeigen wir Dir einige Punkte auf dem Bildschirm, \n' ...
-                        'bei denen Du Dich wie folgt verhältst:\n' ...
-                        'Bitte fixiere das Fixationskreuz und \n' ...
-                        'bleibe so lange darauf, wie es zu sehen ist.\n' ...
-                        'Bitte drücke jetzt den mittleren Knopf, \n' ...
-                        'um mit der Kalibrierung weiterzumachen.\n' ...
-                    ];
-        
-        elseif nInstruct == 1
+       
+        if nInstruct == 1
             text = ['Du siehst nun nacheinander zwei Gesichter.\n'...
                 '\n'...
                 'Danach wirst Du gefragt, ob die Gesichter unterschiedlich oder gleich waren.\n'...
@@ -674,131 +643,7 @@ movefile(p.path.subject,p.path.finalsubject);
 %             ylabel('xCurrent (Deg)');
 %             
 %         end
-function [t]=StopEyelinkRecording
-        Eyelink('StopRecording');
-        t = GetSecs;
-        %this is the end of the trial scope.
-        WaitSecs(0.01);
-        Eyelink('Message', 'TRIAL_RESULT 0');
-        %
-        WaitSecs(0.01);
-        Eyelink('Command', 'set_idle_mode');
-        WaitSecs(0.01);
-        Eyelink('Command', 'clear_screen %d', 0);
-        Log(t,-8,NaN);
-    end
-    function [t]=StartEyelinkRecording(nStim,phase,oddball,ucs,pos1)
-        t = [];
-        nStim = double(nStim);
-        Eyelink('Message', 'TRIALID: %03d, PHASE: %02d, ODDBALL: %02d, UCS: %02d', nStim, phase, double(oddball), double(ucs));
-        % an integration message so that an image can be loaded as
-        % overlay background when performing Data Viewer analysis.
-        WaitSecs(0.01);
-        %return
-        Eyelink('Message', '!V IMGLOAD CENTER %s %d %d', p.stim.files(nStim,:), p.ptb.midpoint(1), p.ptb.midpoint(2));
-        % This supplies the title at the bottom of the eyetracker display
-        Eyelink('Command', 'record_status_message "Stim: %02d, Phase: %d"', nStim, phase);
-        %
-        %Put the tracker offline and draw the stimuli.
-        Eyelink('Command', 'set_idle_mode');
-        WaitSecs(0.01);
-        % clear tracker display and draw box at center
-        Eyelink('Command', 'clear_screen %d', 0);
-        %draw the image on the screen but also the two crosses
-        if nStim <= 16
-            Eyelink('ImageTransfer',p.stim.files(nStim,:),p.ptb.imrect(1),p.ptb.imrect(2),p.ptb.imrect(3),p.ptb.imrect(4),p.ptb.imrect(1),p.ptb.imrect(2));
-        end
-%         Eyelink('Command', 'draw_cross %d %d 15',p_ptb_CrossPositionET_x(1),p_ptb_CrossPositionET_y(1) );
-%         Eyelink('Command', 'draw_cross %d %d 15',p_ptb_CrossPositionET_x(2),p_ptb_CrossPositionET_y(2) );
-        Eyelink('Command', 'draw_cross %d %d 15',pos1(1),pos1(2))
-        %
-        %drift correction
-        %EyelinkDoDriftCorrection(el,crosspositionx,crosspositiony,0,0);
-        %start recording following mode transition and a short pause.
-        Eyelink('Command', 'set_idle_mode');
-        WaitSecs(0.01);
-        Eyelink('StartRecording');
-        t = GetSecs;
-        Log(t,8,NaN);
-    end
-function InitEyeLink
-        %
-        if EyelinkInit(0)%use 0 to init normaly
-            fprintf('=================\nEyelink initialized correctly...\n')
-        else
-            fprintf('=================\nThere is problem in Eyelink initialization\n')
-            keyboard;
-        end
-        %
-        WaitSecs(0.5);
-        [~, vs] = Eyelink('GetTrackerVersion');
-        fprintf('=================\nRunning experiment on a ''%s'' tracker.\n', vs );
-        %
-        el                          = EyelinkInitDefaults(p.ptb.w);
-        %update the defaults of the eyelink tracker
-        el.backgroundcolour         = p.stim.bg;
-        el.msgfontcolour            = WhiteIndex(el.window);
-        el.imgtitlecolour           = WhiteIndex(el.window);
-        el.targetbeep               = 0;
-        el.calibrationtargetcolour  = WhiteIndex(el.window);
-        el.calibrationtargetsize    = 1.5;
-        el.calibrationtargetwidth   = 0.5;
-        el.displayCalResults        = 1;
-        el.eyeimgsize               = 50;
-        el.waitformodereadytime     = 25;%ms
-        el.msgfont                  = 'Times New Roman';
-        el.cal_target_beep          =  [0 0 0];%[1250 0.6 0.05];
-        %shut all sounds off
-        el.drift_correction_target_beep = [0 0 0];
-        el.calibration_failed_beep      = [0 0 0];
-        el.calibration_success_beep     = [0 0 0];
-        el.drift_correction_failed_beep = [0 0 0];
-        el.drift_correction_success_beep= [0 0 0];
-        EyelinkUpdateDefaults(el);
-        %PsychEyelinkDispatchCallback(el)
-                            
-        % open file.
-        res = Eyelink('Openfile', p.path.edf);
-        %
-        Eyelink('command', 'add_file_preamble_text ''Recorded by EyelinkToolbox FearGen2 Experiment''');
-        Eyelink('command', 'screen_pixel_coords = %ld %ld %ld %ld', 0, 0, p.ptb.width-1, p.ptb.height-1);
-        Eyelink('message', 'DISPLAY_COORDS %ld %ld %ld %ld', 0, 0, p.ptb.width-1, p.ptb.height-1);
-        % set calibration type.
-        Eyelink('command', 'calibration_type = HV9');
-        Eyelink('command', 'select_parser_configuration = 1');
-        %what do we want to record
-        Eyelink('command', 'file_sample_data  = LEFT,RIGHT,GAZE,HREF,AREA,GAZERES,STATUS,INPUT,HTARGET');
-        Eyelink('command', 'file_event_filter = LEFT,RIGHT,FIXATION,SACCADE,BLINK,MESSAGE,BUTTON,INPUT');
-        Eyelink('command', 'use_ellipse_fitter = no');
-        % set sample rate in camera setup screen
-        Eyelink('command', 'sample_rate = %d',1000);
-    end
-    function StopEyelink(filename)
-        try
-            fprintf('Trying to stop the Eyelink system with StopEyelink\n');
-            Eyelink('StopRecording');
-            WaitSecs(0.5);
-            Eyelink('Closefile');
-            display('receiving the EDF file...');
-            Eyelink('ReceiveFile',filename,[p.path.subject '\eye\'],1);
-            display('...finished!')
-            % Shutdown Eyelink:
-            Eyelink('Shutdown');
-        catch
-            display('StopEyeLink routine didn''t really run well');
-        end
-    end
- function CalibrateEL
-        fprintf('=================\n=================\nEntering Eyelink Calibration\n')
-        p_var_ExpPhase  = 0;
-        ShowInstruction(0);
-        EyelinkDoTrackerSetup(el);
-        %Returns 'messageString' text associated with result of last calibration
-        [~, messageString] = Eyelink('CalMessage');
-        Eyelink('Message','%s',messageString);%
-        WaitSecs(0.05);
-        fprintf('=================\n=================\nNow we are done with the calibration\n')
-    end
+
 
   function cleanup
         
