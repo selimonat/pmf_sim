@@ -154,3 +154,18 @@ end
 
 legend('estimated \beta (\pm SE)','Location','southoutside','orientation','horizontal')
 
+
+h=figure;
+line([0 max(trials)+10], [45 45],'color','yellow','linewidth',2)
+hold on;
+errorbar(trials,mean3,E3,'o--','Linewidth',2,'color',[.04 .52 .78]) %[.08 .17 .55]
+xlabel('ntrials')
+ylabel('Slope in SD')
+title('Estimation of Beta for SD = 45','fontsize',14)
+legend('true slope', 'mean estimated slope (\pm std)','location','southeast')
+print('..\..\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\plots\Beta_45_45_20to120_lines','-dpng','-r300');
+print('..\..\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\plots\Beta_45_45_20to120_lines','-deps');
+saveas(h,'C:\Users\onat\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\plots\Beta_45_45_20to120_lines.fig')
+
+
+
