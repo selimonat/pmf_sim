@@ -166,6 +166,41 @@ legend('true slope', 'mean estimated slope (\pm std)','location','southeast')
 print('..\..\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\plots\Beta_45_45_20to120_lines','-dpng','-r300');
 print('..\..\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\plots\Beta_45_45_20to120_lines','-deps');
 saveas(h,'C:\Users\onat\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\plots\Beta_45_45_20to120_lines.fig')
+SaveFigure('C:\Users\onat\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\trial_question\plots\Beta_45_45_20to120_lines.png','resolution',300)
 
 
+fig=figure;
+for p=1:3
+    minn=5;
+    maxn=25;
+    dotsize  = Scale(sum(d.nxmean(:,:,1,p,1),2))*(maxn-minn)+minn;
+    x=0:0.1:100;
+    xstimrange=0:11.25:100;
+
+    
+    subplot(3,1,p)
+    plot(x,PAL_CumulativeNormal([45 1/(15*p) 0.1 0.02],x),'r')
+    hold on;
+    plot(x,PAL_CumulativeNormal([mean(d.alpha(:,1,p,1)) 1/(mean(d.sd(:,1,p,1))) mean(d.guess(:,1,p,1)) mean(d.lapse(:,1,p,1))],x),'b')
+    
+    for i=1:9
+        plot(xstimrange(i), 1.5,'o','MarkerEdgeColor',[0.5 0.5 0.5],'Markersize',dotsize(i),'MarkerFaceColor',[0.5 0.5 0.5])
+    end
+    title(sprintf('SD = %g',15*p))
+    ylim([0 2])
+    xlim([-10 100])
+    box off
+
+end
+set(gcf,'position',[0 0 400 900])
+xlabel('Stimulus intensity in degrees')
+h=suptitle('Stimulus Placement of PSImargYN plus x=0 trials');
+set(h,'FontSize',14)
+% legend('generating PF','mean estimated PF','stimulus placement','orientation','horizontal','location','best','box','off');
+legend('generating PF','mean estimated PF','stimulus placement','location','south');
+legend boxoff
+
+legendmarkeradjust(10)
+
+SaveFigure('C:\Users\onat\Dropbox\feargen_lea\EthnoMaster\simdata\diffSDs\zeros_nozeros\stimulusplacement.eps','resolution',300)
 
