@@ -38,7 +38,11 @@ for chain=1:size(p.psi.log.x,1)
     xlabel('X (deg)')
     xlim([-10 100])
     ylim([-.4 1.4])
-    title(sprintf('chain %d',chain))
+    if chain==1
+        title('CS+')
+    else
+        title('CS-')
+    end
     hold off
     box off;
     line([p.psi.log.alpha(end) p.psi.log.alpha(end)],[ylim],'Color','r')
@@ -55,7 +59,7 @@ for chain=1:size(p.psi.log.x,1)
     grid on;
     set(gca,'yticklabel',[],'ytick',[],'ycolor',[1 1 1],'xtick',xstimrange,'xtick',xstimrange(1:2:end));
      xlabel('X (deg)')
-    text(xstimrange(1)+.3,1.2,'20%')
+    text(xstimrange(1),1.9,'20%')
     
     subplot(4,2,4+chain)
     plot(1:length(p.psi.log.alpha(chain,:)),p.psi.log.alpha(chain,:),'r-')
@@ -68,10 +72,10 @@ for chain=1:size(p.psi.log.x,1)
      ylabel('alpha (degrees)');
     
     subplot(4,2,6+chain)
-    plot(1:length(p.psi.log.beta(chain,:)),(p.psi.log.beta(chain,:)),'b-')
+    plot(1:length(p.psi.log.beta(chain,:)),(10.^-p.psi.log.beta(chain,:)),'b-')
     hold on;
-    errorbar([1 length(p.psi.log.beta(chain,:))],p.psi.log.beta(chain,[1 end]),p.psi.log.seBeta(chain,[1 end]),'bo')
-    title(sprintf('estimated log10(beta) = %3.3g (%3.3g)',p.psi.log.beta(chain,end),p.psi.log.seBeta(chain,end)))
+    errorbar([1 length(p.psi.log.beta(chain,:))],(10.^-p.psi.log.beta(chain,[1 end])),(10.^-p.psi.log.seBeta(chain,[1 end])),'bo')
+    title(sprintf('estimated beta in SD = %3.3g (%3.3g)',(10.^-p.psi.log.beta(chain,end)),(10.^-p.psi.log.seBeta(chain,end))))
     xlim([-5 length(p.psi.log.beta(chain,:))+5])
     box off;
      xlabel('# trials')
@@ -79,7 +83,7 @@ for chain=1:size(p.psi.log.x,1)
 end
 
 %%%%
-save_path = sprintf('%sfigures/%s.png',isn_GetPath(subject,phase),mfilename);
+save_path = sprintf('%sfigures/%s.bmp',isn_GetPath(subject,phase),mfilename);
 hgexport(fig,save_path);
 save_path = sprintf('%sfigures/%s.eps',isn_GetPath(subject,phase),mfilename);
 hgexport(fig,save_path);
