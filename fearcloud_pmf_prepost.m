@@ -16,14 +16,16 @@ for sub=subjects
     %Pre vs Post, CSN and CSP in one figure
     
     plot(x,...
-        PAL_CumulativeNormal([pmf.alpha(cs,1,1) 10.^(pmf.beta(cs,1,1)) pmf.gamma(cs,1,1) pmf.lambda(cs,1,1)],x),'r','linewidth',2)
+        PAL_CumulativeNormal([pmf.alpha(cs,1,1) 10.^(pmf.beta(cs,1,1)) pmf.gamma(cs,1,1) pmf.lambda(cs,1,1)],x),'r--','linewidth',2)
     hold on;
     plot(x,...
-        PAL_CumulativeNormal([pmf.alpha(cs,2,1) 10.^(pmf.beta(cs,2,1)) pmf.gamma(cs,2,1) pmf.lambda(cs,2,1)],x),'b','linewidth',2)
+        PAL_CumulativeNormal([pmf.alpha(cs,2,1) 10.^(pmf.beta(cs,2,1)) pmf.gamma(cs,2,1) pmf.lambda(cs,2,1)],x),'b--','linewidth',2)
     legend('CS+','CS-','location','southeast')
     title('Pre')
     xlabel('X (deg)')
     ylabel('p("different")')
+     axis square
+    
     
     %%%%%
     subplot(1,2,2)
@@ -37,14 +39,16 @@ for sub=subjects
     title('Post')
     xlabel('X (deg)')
     ylabel('p("different")')
+    axis square
+   
       
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    save_path = sprintf('%sfigures/%s_prepost.png',isn_GetPath(sub,5),mfilename);
+    save_path = sprintf('%sfigures/%s.png',isn_GetPath(sub,5),mfilename);
     hgexport(fig(1),save_path);
-    save_path = sprintf('%sfigures/%s_prepost.eps',isn_GetPath(sub,5),mfilename);
+    save_path = sprintf('%sfigures/%s.eps',isn_GetPath(sub,5),mfilename);
     hgexport(fig(1),save_path);
-    print(sprintf('%sfigures/%s_prepost_print',isn_GetPath(sub,5),mfilename),'-dpng')
+    saveas(fig(1),sprintf('%sfigures/%s.png',isn_GetPath(sub,5),mfilename))
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     fig(2)=figure('units','normalized','outerposition',[0 0 0.8 .7]);
@@ -61,6 +65,8 @@ for sub=subjects
     title('CS+')
     xlabel('X (deg)')
     ylabel('p("different")')
+     axis square
+   
     %%%%% 
     subplot(1,2,2)    
     plot(x,...
@@ -72,12 +78,14 @@ for sub=subjects
       title('CS-')
     xlabel('X (deg)')
     ylabel('p("different")')
+    axis square
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     save_path = sprintf('%sfigures/%s_CS.png',isn_GetPath(sub,5),mfilename);
     hgexport(fig(2),save_path);
     save_path = sprintf('%sfigures/%s_CS.eps',isn_GetPath(sub,5),mfilename);
     hgexport(fig(2),save_path);
-    print(sprintf('%sfigures/%s_CS_print',isn_GetPath(sub,5),mfilename),'-dpng')
+    saveas(fig(2),sprintf('%sfigures/%s_CS.png',isn_GetPath(sub,5),mfilename))
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
 end
