@@ -1,10 +1,11 @@
-function fearcloud_pmf_plot(subject,phase)
+function fearcloud_pmf_plot2(subject,phase)
 
 global project_path
 
 Log       = isn_GetData(subject,phase,'stimulation');
 p = Log.p;
-psi       = Log.p.psi;x         = 0:1:100;
+psi       = Log.p.psi;
+x         = 0:1:169;
 xstimrange= psi.stimRange;
 % collect number of trials per stimulus Level
 
@@ -36,7 +37,7 @@ for chain=1:size(p.psi.log.x,1)
     end
     ylabel('p(different)')
     xlabel('X (deg)')
-    xlim([-10 100])
+    xlim([-10 max(x)])
     ylim([-.4 1.4])
     if chain==1
         title('CS+')
@@ -45,7 +46,7 @@ for chain=1:size(p.psi.log.x,1)
     end
     hold off
     box off;
-    line([p.psi.log.alpha(end) p.psi.log.alpha(end)],[ylim],'Color','r')
+    line([p.psi.log.alpha(chain,end) p.psi.log.alpha(chain,end)],ylim,'Color','r')
     
     
     subplot(4,2,2+chain)
@@ -53,11 +54,11 @@ for chain=1:size(p.psi.log.x,1)
         plot(xstimrange(i),1.2,'o','color',[0.3 0.3 0.3],'Markersize',dotsize(i),'MarkerFaceColor',[0.3 0.3 0.3]);
         hold on;
     end
-    xlim([-10 100]);
+    xlim([-10 max(x)]);
     title('Number of Presentations')
     box off;
     grid on;
-    set(gca,'yticklabel',[],'ytick',[],'ycolor',[1 1 1],'xtick',xstimrange,'xtick',xstimrange(1:2:end));
+    set(gca,'yticklabel',[],'ytick',[],'ycolor',[1 1 1],'xtick',xstimrange(1:4:end));
      xlabel('X (deg)')
     text(xstimrange(1),1.9,'20%')
     
@@ -83,7 +84,6 @@ for chain=1:size(p.psi.log.x,1)
 end
 
 %%%%
-save_path = sprintf('%sfigures/%s.bmp',isn_GetPath(subject,phase),mfilename);
-hgexport(fig,save_path);
 save_path = sprintf('%sfigures/%s.eps',isn_GetPath(subject,phase),mfilename);
 hgexport(fig,save_path);
+saveas(fig,sprintf('%sfigures/%s_png.png',isn_GetPath(subject,phase),mfilename))
