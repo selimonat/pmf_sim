@@ -1,4 +1,4 @@
-function fearcloud_pmf_plot2(subject,phase)
+function fearcloud_pmf_plot(subject,phase)
 
 global project_path
 
@@ -65,7 +65,7 @@ for chain=1:size(p.psi.log.x,1)
     subplot(4,2,4+chain)
     plot(1:length(p.psi.log.alpha(chain,:)),p.psi.log.alpha(chain,:),'r-')
     hold on;
-    errorbar([1 length(p.psi.log.alpha(chain,:))],p.psi.log.alpha(chain,[1 end]),p.psi.log.seAlpha(chain,[1 end]),'ro')
+    errorbar([1 length(p.psi.log.alpha(chain,:))],p.psi.log.alpha(chain,[1 end]),p.psi.log.seAlpha(chain,[1 end]),'r.')
     title(sprintf('estimated alpha=%3.3g (%3.3g)',p.psi.log.alpha(chain,end),p.psi.log.seAlpha(chain,end)))
     xlim([-5 length(p.psi.log.beta(chain,:))+5])
     box off;
@@ -73,14 +73,15 @@ for chain=1:size(p.psi.log.x,1)
      ylabel('alpha (degrees)');
     
     subplot(4,2,6+chain)
-    plot(1:length(p.psi.log.beta(chain,:)),(10.^-p.psi.log.beta(chain,:)),'b-')
+    plot(1:length(p.psi.log.beta(chain,:)),(p.psi.log.beta(chain,:)),'b-')
     hold on;
-    errorbar([1 length(p.psi.log.beta(chain,:))],(10.^-p.psi.log.beta(chain,[1 end])),(10.^-p.psi.log.seBeta(chain,[1 end])),'bo')
-    title(sprintf('estimated beta in SD = %3.3g (%3.3g)',(10.^-p.psi.log.beta(chain,end)),(10.^-p.psi.log.seBeta(chain,end))))
+    errorbar([1 length(p.psi.log.beta(chain,:))],(p.psi.log.beta(chain,[1 end])),(p.psi.log.seBeta(chain,[1 end])),'b.')
+    title(sprintf('estimated beta (SD) = %3.3g degrees',(10.^-p.psi.log.beta(chain,end))))
+    %title(sprintf('estimated beta in SD = %3.3g (%3.3g)',(10.^-p.psi.log.beta(chain,end)),(10.^-p.psi.log.seBeta(chain,end))))
     xlim([-5 length(p.psi.log.beta(chain,:))+5])
     box off;
      xlabel('# trials')
-     ylabel('sd (degrees)');
+     ylabel('beta(log)');
 end
 
 %%%%
