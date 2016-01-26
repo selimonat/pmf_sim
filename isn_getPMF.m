@@ -1,6 +1,6 @@
 function [pmf]=isn_getPMF(subject,run)
 global project_path
-project_path='C:\Users\onat\Google Drive\EthnoMaster\data\';
+project_path='C:\Users\onat\Documents\Experiments\EthnoMaster\data\';
 cs=0;
 cr=0;
 for ns=subject
